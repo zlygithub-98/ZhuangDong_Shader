@@ -25,5 +25,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _node_5107: 0.5
-    m_Colors: []
+    - _node_5107_copy: 0.051
+    m_Colors:
+    - _node_3413: {r: 0.11402316, g: 0.9528302, b: 0.05842829, a: 1}
   m_BuildTextureStacks: []
