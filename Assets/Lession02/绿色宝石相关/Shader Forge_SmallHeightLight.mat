@@ -25,9 +25,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _level: 1
+    - _node_5171: 0.999
     - _node_7028: 2.83
     m_Colors:
     - _: {r: 0.6363475, g: 0.9433962, b: 0.7919259, a: 1}
-    - _node_611: {r: 1, g: 1, b: 1, a: 1}
+    - _node_611: {r: 0.8443396, g: 1, b: 0.87784094, a: 1}
     - _node_9880: {r: 1, g: 0.7917643, b: 0.1556604, a: 1}
   m_BuildTextureStacks: []
