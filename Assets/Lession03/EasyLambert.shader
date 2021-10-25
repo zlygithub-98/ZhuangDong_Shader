@@ -55,9 +55,8 @@ Shader "Shader Forge/EasyLambert"
                 float3 lDir = normalize(_WorldSpaceLightPos0.xyz);
                 float nDotl = dot(nDir, lDir);
                 float lambert = max(0.0, nDotl);
-                //return float4(lambert,lambert,lambert,lambert);
-                float3 color = float3(1, 1, 0);
-                lambert = lambert * color;
+                return float4(lambert,lambert,lambert,lambert);
+                float3 color = float3(1, 0.5, 0.5);
                 float4 l4=float4(lambert,lambert,lambert,lambert);
                 return mul(l4,color);
             }
