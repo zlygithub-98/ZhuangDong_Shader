@@ -32,6 +32,8 @@ Shader "Unlit/OldSchoolPlus_Code"
             #pragma vertex vert
             #pragma fragment frag
             #include "UnityCG.cginc"
+            #include "AutoLight.cginc"
+            #include "Lighting.cginc"
             #pragma multi_compile_fwdbase_fullshadows
             #pragma target 3.0
 
@@ -43,46 +45,49 @@ Shader "Unlit/OldSchoolPlus_Code"
             uniform float4 _DownColor;
             uniform sampler2D _OcculsionMask;
 
-
-            // 输入结构
             struct VertexInput
             {
-                float4 vertex : POSITION; // 将模型的顶点信息输入进来 默认就会输入进来
+                float4 vertex : POSITION;
                 float4 normal : NORMAL;
                 float2 uv1:TEXCOORD0;
             };
 
-            // 输出结构
             struct VertexOutput
             {
-                float4 posCS : SV_POSITION; // 由模型顶点信息换算而来的顶点屏幕位置
+                float4 posCS : SV_POSITION;
                 float3 nDirWS:TEXTOORD0;
                 float3 posWS:TEXCOORD1;
                 float2 uv:TEXCOORD2;
+                //todo:投影debug
+                //LIGHTING_COORDS(3, 4)
             };
 
-            // 输入结构>>>顶点Shader>>>输出结构
             VertexOutput vert(VertexInput v)
             {
-                VertexOutput o = (VertexOutput)0; // 新建一个输出结构
-                o.posCS = UnityObjectToClipPos(v.vertex); // 变换顶点信息 并将其塞给输出结构
-                o.nDirWS = UnityObjectToWorldNormal(v.normal); //unity声明的方法：物体坐标变换为世界空间坐标
+                VertexOutput o = (VertexOutput)0;
+                o.posCS = UnityObjectToClipPos(v.vertex);
+                o.nDirWS = UnityObjectToWorldNormal(v.normal);
                 o.posWS = mul(unity_ObjectToWorld, v.vertex);
                 o.uv = v.uv1;
-                return o; // 将输出结构 输出
+                //todo:投影debug
+                //TRANSFER_VERTEX_TO_FRAGMENT(o)
+                return o;
             }
 
-            // 输出结构>>>像素
             float4 frag(VertexOutput o) : COLOR
             {
-                //准备阶段   lambert光照模型:ldir ndir phong光照模型：ldir vdir
+                //todo:投影debug
+                // float shadow = LIGHT_ATTENUATION(i);
+                // return shadow;
+
+                //准备阶段                
                 float3 nDir = o.nDirWS;
+
                 float3 lDir = normalize(_WorldSpaceLightPos0.xyz);
                 float3 vdir = normalize(_WorldSpaceCameraPos - o.posWS);
                 float3 vReflectDir = reflect(-vdir, nDir);
                 //中间量阶段
                 float phong = pow(max(0, dot(lDir, vReflectDir)), _PhongPower);
-                //return phong;
                 float lambert = max(0, dot(nDir, lDir));
 
                 float3 colorLambert = lambert * _BaseColor;
