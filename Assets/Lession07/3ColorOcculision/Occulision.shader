@@ -56,15 +56,12 @@ Shader "Shader Forge/Occulision" {
 ////// Lighting:
 ////// Emissive:
                 float node_6513 = i.normalDir.g;
-                float node_5382 = (node_6513*(-1.0)); // 向下的遮罩
-                float node_8054 = saturate(node_5382);
+                float node_8054 = saturate((node_6513*(-1.0)));
                 float4 _colorDown_var = UNITY_ACCESS_INSTANCED_PROP( Props, _colorDown );
                 float node_2311 = saturate((1.0*node_6513));
                 float4 _colorUp_var = UNITY_ACCESS_INSTANCED_PROP( Props, _colorUp );
-                float node_1316 = 1.0;
-                float node_2734 = saturate(((node_1316-node_8054)-node_2311));
                 float4 _colorMiddle_var = UNITY_ACCESS_INSTANCED_PROP( Props, _colorMiddle );
-                float3 emissive = (((node_8054*_colorDown_var.rgb)+(node_2311*_colorUp_var.rgb))+(node_2734*_colorMiddle_var.rgb));
+                float3 emissive = (((node_8054*_colorDown_var.rgb)+(node_2311*_colorUp_var.rgb))+(saturate(((1.0-node_8054)-node_2311))*_colorMiddle_var.rgb));
                 float3 finalColor = emissive;
                 return fixed4(finalColor,1);
             }

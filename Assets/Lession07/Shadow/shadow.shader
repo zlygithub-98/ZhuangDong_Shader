@@ -22,7 +22,6 @@ Shader "Shader Forge/shadow" {
             #pragma fragment frag
             #include "UnityCG.cginc"
             #include "AutoLight.cginc"
-            #include "Lighting.cginc"
             #pragma multi_compile_fwdbase_fullshadows
             #pragma target 3.0
             struct VertexInput {
@@ -39,49 +38,9 @@ Shader "Shader Forge/shadow" {
                 return o;
             }
             float4 frag(VertexOutput i) : COLOR {
-////// Lighting:
                 float attenuation = LIGHT_ATTENUATION(i);
-////// Emissive:
                 float3 emissive = float3(attenuation,attenuation,attenuation);
-                float3 finalColor = emissive;
-                return fixed4(finalColor,1);
-            }
-            ENDCG
-        }
-        Pass {
-            Name "FORWARD_DELTA"
-            Tags {
-                "LightMode"="ForwardAdd"
-            }
-            Blend One One
-            
-            
-            CGPROGRAM
-            #pragma vertex vert
-            #pragma fragment frag
-            #include "UnityCG.cginc"
-            #include "AutoLight.cginc"
-            #include "Lighting.cginc"
-            #pragma multi_compile_fwdadd_fullshadows
-            #pragma target 3.0
-            struct VertexInput {
-                float4 vertex : POSITION;
-            };
-            struct VertexOutput {
-                float4 pos : SV_POSITION;
-                LIGHTING_COORDS(0,1)
-            };
-            VertexOutput vert (VertexInput v) {
-                VertexOutput o = (VertexOutput)0;
-                o.pos = UnityObjectToClipPos( v.vertex );
-                TRANSFER_VERTEX_TO_FRAGMENT(o)
-                return o;
-            }
-            float4 frag(VertexOutput i) : COLOR {
-////// Lighting:
-                float attenuation = LIGHT_ATTENUATION(i);
-                float3 finalColor = 0;
-                return fixed4(finalColor * 1,0);
+                return fixed4(emissive,1);
             }
             ENDCG
         }
