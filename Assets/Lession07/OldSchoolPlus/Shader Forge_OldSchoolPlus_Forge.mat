@@ -34,6 +34,6 @@ Material:
     - _MiddleColor: {r: 0.9284644, g: 0.7311321, b: 1, a: 1}
     - _baseColor: {r: 0.82999325, g: 0.8490566, b: 0.01201493, a: 1}
     - _downColor: {r: 0.7830189, g: 0.61772513, b: 0.003693494, a: 1}
-    - _lightColor: {r: 1, g: 1, b: 1, a: 1}
+    - _lightColor: {r: 1, g: 0.6179246, b: 0.9779575, a: 1}
     - _upColor: {r: 0.6745283, g: 0.97702557, b: 1, a: 1}
   m_BuildTextureStacks: []

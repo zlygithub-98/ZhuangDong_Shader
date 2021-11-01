@@ -3,7 +3,7 @@ Shader "Unlit/OldSchoolPlus_Code"
     Properties
     {
         _PhongPower("高光强度",range(1,90))=30.0
-        _EnvLevel("环境光强度",range(0,1))=0.5
+        _EnvIntensity("环境光强度",range(0,1))=0.5
 
         _BaseColor("物体的颜色",color)=(1.0,1.0,1.0,1.0)
         _UpColor("顶部漫反射颜色",color)=(1.0,0.0,0.0,0.0)
@@ -37,7 +37,7 @@ Shader "Unlit/OldSchoolPlus_Code"
             #pragma target 3.0
 
             uniform float _PhongPower;
-            uniform float _EnvLevel;
+            uniform float _EnvIntensity;
             uniform float4 _BaseColor;
             uniform float4 _UpColor;
             uniform float4 _SideColor;
@@ -101,7 +101,7 @@ Shader "Unlit/OldSchoolPlus_Code"
                 
                 //计算AO遮罩 注意传递的参数为AO贴图和模型UV
                 float3 envMask = normalize(tex2D(_OcculsionMask, o.uv));
-                float3 envLighting = normalize(envColor * envMask) * _EnvLevel;
+                float3 envLighting = normalize(envColor * envMask) * _EnvIntensity;
 
                 //最终效果
                 float3 finalRGB = colorLambert + envLighting;

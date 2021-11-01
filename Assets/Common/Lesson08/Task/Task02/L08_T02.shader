@@ -97,21 +97,16 @@ Shader "AP01/L08/Task02" {
                 float _TopRange_var = UNITY_ACCESS_INSTANCED_PROP( Props, _TopRange );
                 float4 _BottomCol_var = UNITY_ACCESS_INSTANCED_PROP( Props, _BottomCol );
                 float _BottomRange_var = UNITY_ACCESS_INSTANCED_PROP( Props, _BottomRange );
-                float3 node_8298 = lerp(lerp(_BaseCol_var.rgb,_TopCol_var.rgb,pow(saturate(node_785),_TopRange_var)),_BottomCol_var.rgb,pow(saturate((node_785*(-1.0))),_BottomRange_var));
                 float4 _BoneCol_var = UNITY_ACCESS_INSTANCED_PROP( Props, _BoneCol );
                 float _BonePow_var = UNITY_ACCESS_INSTANCED_PROP( Props, _BonePow );
                 float node_6346 = pow(1.0-max(0,dot(normalDirection, viewDirection)),_BonePow_var);
-                float3 node_9265 = saturate((node_8298*lerp(_BoneCol_var.rgb,float3(1,1,1),node_6346)));
                 float4 _Occlusion_var = tex2D(_Occlusion,TRANSFORM_TEX(i.uv0, _Occlusion));
-                float3 node_8738 = lerp(_OccCol_var.rgb,node_9265,_Occlusion_var.r);
                 float _ShadowInt_var = UNITY_ACCESS_INSTANCED_PROP( Props, _ShadowInt );
                 float _SpecPow_var = UNITY_ACCESS_INSTANCED_PROP( Props, _SpecPow );
                 float4 _SpceCol_var = UNITY_ACCESS_INSTANCED_PROP( Props, _SpceCol );
-                float3 node_1116 = (pow(saturate(dot(viewReflectDirection,lightDirection)),_SpecPow_var)*_SpceCol_var.rgb);
                 float _FresnelPow_var = UNITY_ACCESS_INSTANCED_PROP( Props, _FresnelPow );
                 float4 _FresnelCol_var = UNITY_ACCESS_INSTANCED_PROP( Props, _FresnelCol );
-                float3 node_4369 = (pow(1.0-max(0,dot(normalDirection, viewDirection)),_FresnelPow_var)*_FresnelCol_var.rgb);
-                float3 emissive = (((node_8738*lerp(float3(1,1,1),float3(attenuation,attenuation,attenuation),_ShadowInt_var))+(attenuation*node_1116))+node_4369);
+                float3 emissive = (((lerp(_OccCol_var.rgb,saturate((lerp(lerp(_BaseCol_var.rgb,_TopCol_var.rgb,pow(saturate(node_785),_TopRange_var)),_BottomCol_var.rgb,pow(saturate((node_785*(-1.0))),_BottomRange_var))*lerp(_BoneCol_var.rgb,float3(1,1,1),node_6346))),_Occlusion_var.r)*lerp(float3(1,1,1),float3(attenuation,attenuation,attenuation),_ShadowInt_var))+(attenuation*(pow(saturate(dot(viewReflectDirection,lightDirection)),_SpecPow_var)*_SpceCol_var.rgb)))+(pow(1.0-max(0,dot(normalDirection, viewDirection)),_FresnelPow_var)*_FresnelCol_var.rgb));
                 float3 finalColor = emissive;
                 return fixed4(finalColor,1);
             }
