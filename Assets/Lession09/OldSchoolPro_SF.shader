@@ -82,12 +82,10 @@ Shader "Shader Forge/OldSchoolPro_SF" {
 ////// Emissive:
                 float4 _Color_var = UNITY_ACCESS_INSTANCED_PROP( Props, _Color );
                 float _node_5835_var = UNITY_ACCESS_INSTANCED_PROP( Props, _node_5835 );
-                float3 node_964 = ((attenuation*(_Color_var.rgb*saturate(dot(i.normalDir,lightDirection))))+pow(saturate(dot(lightDirection,viewReflectDirection)),_node_5835_var));
                 float _frebsnel_var = UNITY_ACCESS_INSTANCED_PROP( Props, _frebsnel );
                 float3 _node_5377_var = UnpackNormal(tex2D(_node_5377,TRANSFORM_TEX(i.uv0, _node_5377)));
                 float _node_4788_var = UNITY_ACCESS_INSTANCED_PROP( Props, _node_4788 );
-                float3 node_300 = (pow(1.0-max(0,dot(normalDirection, viewDirection)),_frebsnel_var)*texCUBElod(_node_6221,float4(reflect((viewDirection*(-1.0)),mul( _node_5377_var.rgb, tangentTransform ).xyz.rgb),_node_4788_var)).rgb);
-                float3 emissive = (node_964+node_300);
+                float3 emissive = (((attenuation*(_Color_var.rgb*saturate(dot(i.normalDir,lightDirection))))+pow(saturate(dot(lightDirection,viewReflectDirection)),_node_5835_var))+(pow(1.0-max(0,dot(normalDirection, viewDirection)),_frebsnel_var)*texCUBElod(_node_6221,float4(reflect((viewDirection*(-1.0)),mul( _node_5377_var.rgb, tangentTransform ).xyz.rgb),_node_4788_var)).rgb));
                 float3 finalColor = emissive;
                 return fixed4(finalColor,1);
             }
