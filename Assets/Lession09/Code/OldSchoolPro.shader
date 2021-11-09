@@ -33,7 +33,7 @@ Shader "Unlit/OldSchoolPro"
             #pragma multi_compile_fwdbase_fullshadows
             #pragma target 3.0
 
-            uniform float3 _MainColor;
+            uniform float3 _LightColor;
             uniform sampler2D _NormalMap;
             uniform samplerCUBE _CubeMap; //cubeMap在下边的类型用 samplerCUBE
             uniform int _MipMap;
@@ -101,7 +101,7 @@ Shader "Unlit/OldSchoolPro"
                 float frenfnel = pow(1 - dot(vDirWS, nDirWS), _FrenfnelPower);
                 //return frenfnel;
 
-                float3 finalRGB = lambert * _MainColor + phong;
+                float3 finalRGB = lambert * _LightColor + phong;
                 finalRGB = finalRGB + var_CubeMap * _EnvSpecInt * frenfnel;
                 return float4(finalRGB, 1.0); //得到matcap采样效果         
             }

@@ -27,7 +27,7 @@ Shader "Unlit/oldSchool_Alter"
             #pragma multi_compile_fwdbase_fullshadows
             #pragma target 3.0
 
-            uniform float3 _MainColor;
+            uniform float3 _LightColor;
             uniform float _PhonePower;
 
             // 输入结构 lambert: normal light phong:view reflect dir light
@@ -68,7 +68,7 @@ Shader "Unlit/oldSchool_Alter"
                 float lambert = max(0, dot(nDir, lDir));
                 float phong = pow(max(0, dot(lDir, vReflectDir)), _PhonePower);
                 //最终输出
-                float3 finalColor = _MainColor * lambert + phong;
+                float3 finalColor = _LightColor * lambert + phong;
                 return float4(finalColor, 1.0);
             }
             ENDCG

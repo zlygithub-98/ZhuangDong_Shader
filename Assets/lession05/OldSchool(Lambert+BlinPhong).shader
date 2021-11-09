@@ -49,7 +49,7 @@ Shader "Unlit/OldSchool"
             //上边定义的属性在下边声明 一般写在  #pragma target 3.0 之后 保证变量名字上下一致！
 
             /// 漫反射颜色
-            uniform float3 _MainColor;
+            uniform float3 _LightColor;
 
             ///phong强度
             uniform float _SpecularPower;
@@ -124,7 +124,7 @@ Shader "Unlit/OldSchool"
                 float blinPhong = pow(max(0, nDoth), _SpecularPower);
 
                 //最终效果
-                float3 finalRGB = _MainColor * lambert + blinPhong;
+                float3 finalRGB = _LightColor * lambert + blinPhong;
                 return float4(finalRGB, 1);
             }
             ENDCG
