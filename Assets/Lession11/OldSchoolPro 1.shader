@@ -1,11 +1,13 @@
-Shader "Unlit/OldSchoolPro2"
+Shader "Unlit/OldSchoolPro3"
 {
     Properties
     {
         [Header(Textures)]
-
+        [HDR]
         _MainTexture("RGB 基础颜色贴图，A:AOmask",2d)="white"{}
+        [Normal]
         _NormalTexture("法线贴图",2d)="bump"{}
+        [NoScaleOffset]
         _SpecTexture("高光颜色 夹带 高光次幂mask",2d)="gray"{}
         _EmitTexture("自发光颜色贴图",2d)="white"{}
         _Cubemap("镜面反射的球的cubemap",cube)="_Skybox"{}
@@ -15,9 +17,8 @@ Shader "Unlit/OldSchoolPro2"
         _LightColor("光的颜色",color)=(0.5,0.5,0.5,1.0)
         _EnvDiffIntensity("环境反射强度",Range(0,1))=0.2
         _EnvUpColor("上方颜色",cOLOR)=(1.0,1.0,1.0,1.0)
-        _EnvMiddleColor("中间颜色",cOLOR)=(0.5,0.5,0.5,1.0)
-        [HDR]
-        _EnvDownColor("底部颜色",cOLOR)=(0.0,0.0,0.0,0.0)
+        _EnvMiddleColor("上方颜色",cOLOR)=(0.5,0.5,0.5,1.0)
+        _EnvDownColor("上方颜色",cOLOR)=(0.0,0.0,0.0,0.0)
 
         [Header(Specular)]
 
@@ -53,7 +54,6 @@ Shader "Unlit/OldSchoolPro2"
             // 追加投影相关包含文件
             #include "AutoLight.cginc"
             #include "Lighting.cginc"
-            #include "Test.cginc"
             #pragma multi_compile_fwdbase_fullshadows
             #pragma target 3.0
 
@@ -80,21 +80,25 @@ Shader "Unlit/OldSchoolPro2"
             // 输入结构
             struct VertexInput
             {
-                float4 vertex : POSITION; // 将模型的顶点信息输入进来 默认就会输入进来
-                float2 uv:TEXCOORD0;
-                float3 normal:NORMAL; //物体空间的法线信息
-                float4 tangent:TANGENT;
+                float4 vertex : POSITION; //POSITION语义：模型的定点位置 支持类型：float3 flaot4
+                float2 uv0:TEXCOORD0; //TEXCOORD0：UV通道1 支持类型 float2 float3 float4
+                float2 uv1:TEXCOORD1;
+                float3 normal:NORMAL; //法线方向 float3
+                float4 tangent:TANGENT; //切线方向 float4
+                float4 color:COLOR; //定点色 float4
             };
 
             // 输出结构
             struct VertexOutput
             {
-                float4 pos : SV_POSITION; // 屏幕顶点位置
-                float2 uv:TEXCOORD0;
-                float4 posWS:TEXCOORD1;
-                float3 nDirWS:TEXCOORD2; //世界空间的法线信息
-                float3 tDirWS:TEXCOORD3;
-                float3 bDirWS:TEXCOORD4;
+                float4 pos : SV_POSITION; // 其次裁剪空间的屏幕顶点位置
+                float2 uv0:TEXCOORD0; //一般纹理UV
+                float2 uv1:TEXCOORD1; //LighmapUV
+                float4 posWS:TEXCOORD2; //世界空间的定点位置
+                float3 nDirWS:TEXCOORD3; //世界空间的法线方向
+                float3 tDirWS:TEXCOORD4; //世界空间的切线方向
+                float3 bDirWS:TEXCOORD5; //世界空间的副切线方向
+                fixed4 color:TEXCOORD6; //顶点色
                 LIGHTING_COORDS(5, 6)
             };
 
@@ -103,11 +107,13 @@ Shader "Unlit/OldSchoolPro2"
             {
                 VertexOutput o;
                 o.pos = UnityObjectToClipPos(v.vertex);
-                o.uv = v.uv;
+                o.uv0 = v.uv0; //o.uv0 = v.uv0 * unity_LightmapST.xy + unity_LightmapST.zw;
+                o.uv1 = v.uv1; //o.uv1 = v.uv1 * unity_LightmapST.xy + unity_LightmapST.zw;
                 o.posWS = mul(unity_ObjectToWorld, v.vertex);
                 o.nDirWS = UnityObjectToWorldNormal(v.normal);
                 o.tDirWS = normalize(mul(unity_ObjectToWorld, float4(v.tangent.xyz, 0.0)).xyz); // 切线方向 OS>WS
                 o.bDirWS = normalize(cross(o.nDirWS, o.tDirWS) * v.tangent.w); // 副切线方向
+                o.color=v.color;
                 TRANSFER_VERTEX_TO_FRAGMENT(o)
                 return o; // 将输出结构 输出
             }
@@ -119,7 +125,7 @@ Shader "Unlit/OldSchoolPro2"
                 float3 lDirWS = _WorldSpaceLightPos0.xyz;
 
                 //为了准备法线 先构造tbn矩阵
-                float3 nDirTS = UnpackNormal(tex2D(_NormalTexture, o.uv)).rgb;
+                float3 nDirTS = UnpackNormal(tex2D(_NormalTexture, o.uv0)).rgb;
                 float3x3 TBN = float3x3(o.tDirWS, o.bDirWS, o.nDirWS);
                 float3 nDirWS = normalize(mul(nDirTS, TBN));
 
@@ -140,9 +146,9 @@ Shader "Unlit/OldSchoolPro2"
 
                 //3采样纹理
 
-                float4 var_MainTex = tex2D(_MainTexture, o.uv);
-                float4 var_SpecTex = tex2D(_SpecTexture, o.uv);
-                float3 var_EmissTex = tex2D(_EmitTexture, o.uv).rgb;
+                float4 var_MainTex = tex2D(_MainTexture, o.uv0);
+                float4 var_SpecTex = tex2D(_SpecTexture, o.uv0);
+                float3 var_EmissTex = tex2D(_EmitTexture, o.uv0).rgb;
                 float lerpValue = lerp(_CubeMapMip, 0.0, var_SpecTex.a); //我们把mipmap存储到了高光贴图的a通道中
                 float3 var_CubeMap = texCUBElod(_Cubemap, float4(vrDirWS, lerpValue)).rgb;
 

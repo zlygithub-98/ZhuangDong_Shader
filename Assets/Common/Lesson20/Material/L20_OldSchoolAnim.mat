@@ -58,11 +58,11 @@ Material:
     - _EnvInt: 0.205
     - _EnvSpecInt: 1.41
     - _FresnelPow: 0
-    - _HourHandAngle: 17
+    - _HourHandAngle: 186.5
     - _MatcapInt: 0.346
-    - _MinuteHandAngle: 204
+    - _MinuteHandAngle: 78
     - _RotateOffset: 3.205
-    - _SecondHandAngle: 138
+    - _SecondHandAngle: 354
     - _SpecPow: 26.3
     m_Colors:
     - _BaseCol: {r: 0.3962264, g: 0.17558269, b: 0, a: 1}
@@ -71,3 +71,4 @@ Material:
     - _EnvUpCol: {r: 0.6084906, g: 0.9296307, b: 1, a: 1}
     - _LightCol: {r: 0.4339623, g: 0.4339623, b: 0.4339623, a: 1}
     - _MainCol: {r: 0.5660378, g: 0.5660378, b: 0.5660378, a: 1}
+  m_BuildTextureStacks: []
