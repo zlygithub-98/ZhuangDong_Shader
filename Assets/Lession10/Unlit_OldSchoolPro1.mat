@@ -51,7 +51,7 @@ Material:
     - _FresnelPower: 0.35
     - _SpecularPower: 40.5
     m_Colors:
-    - _EnvDownColor: {r: 0, g: 0, b: 0, a: 0}
+    - _EnvDownColor: {r: 3.664921, g: 3.9999995, b: 0, a: 0}
     - _EnvMiddleColor: {r: 0.5828587, g: 0.6981132, b: 0.61208147, a: 1}
     - _EnvUpColor: {r: 0.6274475, g: 0.9433962, b: 0.9173672, a: 1}
     - _LightColor: {r: 0.6415094, g: 0.6415094, b: 0.6415094, a: 1}
