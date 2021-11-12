@@ -59,11 +59,12 @@ Material:
     - _EnvInt: 0.5
     - _EnvSpecInt: 7.44
     - _RimInt: 1
-    - _SpecInt: 3.72
-    - _SpecPow: 7.8
+    - _SpecInt: 2.11
+    - _SpecPow: 0
     m_Colors:
     - _AmbientColor: {r: 0.2830189, g: 0.27145004, b: 0.22027414, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 1}
     - _EnvCol: {r: 0.6320754, g: 0.6320754, b: 0.6320754, a: 1}
     - _LightCol: {r: 0.6107601, g: 0.664847, b: 0.7075472, a: 1}
     - _RimCol: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []

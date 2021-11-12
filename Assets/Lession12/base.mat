@@ -45,9 +45,9 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _CubeMapMip: 0
-    - _EmitInt: 8.22
-    - _EnvDiffInt: 0.31
-    - _EnvSpecInt: 0.1
+    - _EmitInt: 4.52
+    - _EnvDiffInt: 0.504
+    - _EnvSpecInt: 0.08
     - _FresnelPower: 0
     - _SpecPower: 1
     m_Colors:
