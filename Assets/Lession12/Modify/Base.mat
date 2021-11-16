@@ -1,0 +1,65 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: Base
+  m_Shader: {fileID: 4800000, guid: 2a733b9840363407187000a87aa48387, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs:
+    - _Cubemap:
+        m_Texture: {fileID: 8900000, guid: 8807c511423b4af4aaf2f1a043a86a75, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _DiffWarpTex:
+        m_Texture: {fileID: 2800000, guid: 566498f9dcd3a7b4eb74e2294248d1e3, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _EmissionMask:
+        m_Texture: {fileID: 2800000, guid: df5dfe57fdc0d044a8a6480a6caca812, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _FresWarpTex:
+        m_Texture: {fileID: 2800000, guid: 79f1a541c90b14a44903352e018ec2b8, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MainTex:
+        m_Texture: {fileID: 2800000, guid: adf009c9b99f642fab51b35a176fc82a, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MaskTex:
+        m_Texture: {fileID: 2800000, guid: dc097978e442b43c8bdd507624f23a68, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _MatelnessMask:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _NormTex:
+        m_Texture: {fileID: 2800000, guid: dfe43806f352746c8b229dba9600b33a, type: 3}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    m_Floats:
+    - _Cutoff: 0.5
+    - _EmitInt: 0.92
+    - _EnvSpecInt: 7.44
+    - _SpecInt: 3.72
+    - _SpecPow: 7.8
+    m_Colors:
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EnvCol: {r: 0.6313726, g: 0.6313726, b: 0.6313726, a: 1}
+    - _LightCol: {r: 0.6117647, g: 0.6666667, b: 0.7058824, a: 1}
+    - _RimCol: {r: 1, g: 1, b: 1, a: 1}
+  m_BuildTextureStacks: []

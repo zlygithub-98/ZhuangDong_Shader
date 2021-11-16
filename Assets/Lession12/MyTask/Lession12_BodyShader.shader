@@ -118,7 +118,6 @@ Shader "Unlit/Lession12_BodyShader"
                 float4 var_SpecTex = tex2D(_SpecTex, i.uv0);
                 float3 var_EmitTex = tex2D(_EmissionTex, i.uv0);
                 float3 var_CubeMap = texCUBE(_CubeMap, float4(vrDirWS, lerp(_CubeMapMip, 0.0, var_SpecTex.a)));
-                //todo:这个0使用插值
 
                 //光照模型(漫反射部分)
                 float lambert = max(0, nDotl) * 0.5 + 0.5;

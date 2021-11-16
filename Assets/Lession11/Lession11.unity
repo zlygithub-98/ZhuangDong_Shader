@@ -217,7 +217,7 @@ PrefabInstance:
     - target: {fileID: -1798648422541924065, guid: b978e311fb4e47d48938630afe24c4fe, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: f4c2068ef1d7c4208965b1793da99a69, type: 2}
+      objectReference: {fileID: 2100000, guid: f501e1a7be4394435973b9d855f453b4, type: 2}
     - target: {fileID: -927199367670048503, guid: b978e311fb4e47d48938630afe24c4fe, type: 3}
       propertyPath: m_Name
       value: OgreMagi

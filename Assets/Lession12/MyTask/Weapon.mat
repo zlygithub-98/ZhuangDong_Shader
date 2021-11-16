@@ -46,9 +46,9 @@ Material:
     m_Floats:
     - _CubeMapMip: 0
     - _EmitInt: 1
-    - _EnvDiffInt: 1
-    - _EnvSpecInt: 0.6
-    - _FresnelPower: 5
+    - _EnvDiffInt: 0
+    - _EnvSpecInt: 1.04
+    - _FresnelPower: 1.4
     - _SpecPower: 1
     m_Colors:
     - _EnvDownCol: {r: 0, g: 0, b: 0, a: 1}
