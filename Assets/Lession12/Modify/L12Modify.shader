@@ -43,6 +43,7 @@ Shader "Unlit/L12Modify"
                 "LightMode"="ForwardBase"
             }
 
+            Cull Off//关闭单面显示（显示背面）
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
@@ -63,6 +64,19 @@ Shader "Unlit/L12Modify"
             uniform samplerCUBE _Cubemap;
             // DirDiff
             uniform half3 _LightCol;
+            // DirSpec
+            uniform half _SpecPow;
+            uniform half _SpecInt;
+            // EnvDiff
+            uniform half3 _EnvCol;
+            // EnvSpec
+            uniform half _EnvSpecInt;
+            // RimLight
+            uniform half3 _RimCol;
+            // Emission
+            uniform half _EmitInt;
+            // Other
+            uniform half _Cutoff;
 
             // 输入结构
             struct VertexInput
@@ -160,8 +174,34 @@ Shader "Unlit/L12Modify"
                 //对漫反射做一次ramptex采样 从原本的半兰伯特光照模型 转换成贴图的颜色映射（0.2是随便给的值）
                 half3 var_DiffWarpTex = tex2D(_DiffWarpTex, half2(halfLambert, 0.2));
                 half3 dirDiff = diffCol * var_DiffWarpTex * _LightCol;
-                //return fresnelColor;
-                return float4(dirDiff, 1);
+
+                //光源镜面反射
+                //主光镜面反射采用Phong+FresnelSpec:
+                half phong = pow(max(0, vDotlr), specPow * _SpecPow); //1. 计算Phong;
+                half spec = phong * max(0.0, nDotl); //2. Phong乘以Lambert;
+                spec = max(spec, fresnelSpec); //3. Phong和FresnelSpec混合;
+                spec *= _SpecInt;
+                half3 dirSpec = specCol * spec * _LightCol; // 4. 再混合SpecCol，和主光颜色;
+
+                //环境光反射
+                half3 envDiff = diffCol * _EnvCol; //直接混合DiffCol，EnvCol，EnvDiffInt即可
+
+                //环境镜面反射
+                half reflectInt = max(fresnelSpec, matellic) * specInt; //计算ReflectInt反射率;
+                half3 envSpec = specCol * reflectInt * envCube * _EnvSpecInt; //混合SpecCol，反射率，反射环境，反射强度;
+
+                //轮廓光
+                half3 rimLight = _RimCol * fresnelRim * rimInt * max(0.0, nDirWS.g);//混合RimCol，RimCol，FresnelRim，法线 G通道;
+
+                //自发光
+                half3 emission = diffCol * emitInt * _EmitInt; //混合DiffCol，EmitInt;
+
+                //最终结合  主光部分相加，乘以投影，再依次加上环境光部分，轮廓光，自发光;
+                half3 finalRGB = (dirDiff + dirSpec) * shadow + envDiff + envSpec + rimLight + emission;
+
+                // 透明剪切
+                clip(opacity - _Cutoff);
+                return float4(finalRGB, 1);
             }
             ENDCG
         }
