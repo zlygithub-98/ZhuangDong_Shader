@@ -29,7 +29,8 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Floats:
     - _FlowSpeed: -10
-    - _NoiseInt: 2.12
-    - _Opacity: 0.5
+    - _NoiseInt: 0.2
+    - _Opacity: 1
     - _VOffset: 0.758
     m_Colors: []
+  m_BuildTextureStacks: []
