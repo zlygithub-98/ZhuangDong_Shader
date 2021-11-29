@@ -25,8 +25,7 @@ Shader "Unlit/GhostWrap"
             {
                 "LightMode"="ForwardBase"
             }
-            Blend One OneMinusSrcAlpha//传统写法
-            //Blend SrcAlpha OneMinusSrcAlpha //预乘写法
+            Blend One OneMinusSrcAlpha
 
             CGPROGRAM
             #pragma vertex vert
