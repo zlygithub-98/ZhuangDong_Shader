@@ -31,6 +31,6 @@ Material:
     m_Colors:
     - _Color1: {r: 1.7327644, g: 1.1612244, b: 0, a: 1}
     - _Color2: {r: 1.3194854, g: 0.51812255, b: 0, a: 1}
-    - _Noise1Params: {r: 1, g: 0.5, b: 0.07, a: 1}
-    - _Noise2Params: {r: 1, g: 1.87, b: 0, a: 1}
+    - _Noise1Params: {r: 3, g: 5, b: 0, a: 1}
+    - _Noise2Params: {r: 2, g: 10, b: 0.12, a: 1}
   m_BuildTextureStacks: []
