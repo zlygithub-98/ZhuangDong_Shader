@@ -1,4 +1,4 @@
-Shader "AP01/L19/AnimGhost"
+Shader "Custom/GhostAnim"
 {
     Properties
     {
@@ -49,7 +49,7 @@ Shader "AP01/L19/AnimGhost"
             {
                 float4 vertex : POSITION; // 顶点位置 总是必要
                 float2 uv : TEXCOORD0; // UV信息 采样贴图用
-                float4 color : COLOR; // 顶点色 遮罩用
+                float4 color:COLOR;
             };
 
             // 输出结构
@@ -57,40 +57,24 @@ Shader "AP01/L19/AnimGhost"
             {
                 float4 pos : SV_POSITION; // 顶点位置 总是必要
                 float2 uv : TEXCOORD0; // UV信息 采样贴图用
-                float4 color : COLOR;
+                float4 color:COLOR;
             };
 
             // 声明常量
             #define TWO_PI 6.283185
             // 顶点动画方法
-            void AnimGhost(inout float3 vertex, inout float3 color)
+            void AnimGhost(inout float3 vertex, inout float3 color) //顶点 顶点色
             {
-                // 缩放天使圈
-                float scale = _ScaleParams.x * color.g * sin(frac(_Time.z * _ScaleParams.y) * TWO_PI);
-                vertex.xyz *= 1.0 + scale;
-                vertex.y -= _ScaleParams.z * scale;
-                // 幽灵摆动
-                float swingX = _SwingXParams.x * sin(
-                    frac(_Time.z * _SwingXParams.y + vertex.y * _SwingXParams.z) * TWO_PI);
-                float swingZ = _SwingZParams.x * sin(
-                    frac(_Time.z * _SwingZParams.y + vertex.y * _SwingZParams.z) * TWO_PI);
-                vertex.xz += float2(swingX, swingZ) * color.r;
-                // 幽灵摇头
-                float radY = radians(_ShakeYParams.x) * (1.0 - color.r) * sin(
-                    frac(_Time.z * _ShakeYParams.y - color.g * _ShakeYParams.z) * TWO_PI);
-                float sinY, cosY = 0;
-                sincos(radY, sinY, cosY);
-                vertex.xz = float2(
-                    vertex.x * cosY - vertex.z * sinY,
-                    vertex.x * sinY + vertex.z * cosY
-                );
-                // 幽灵起伏
-                float swingY = _SwingYParams.x * sin(
-                    frac(_Time.z * _SwingYParams.y - color.g * _SwingYParams.z) * TWO_PI);
-                vertex.y += swingY;
-                // 处理顶点色
-                float lightness = 1.0 + color.g * 1.0 + scale * 2.0;
-                color = float3(lightness, lightness, lightness);
+                //光圈缩放
+                if (color.g > 0.9)
+                {
+                    float scale = _ScaleParams.x * color.g * sin(frac(_Time.x * _ScaleParams.y) * TWO_PI);
+                    vertex.xyz *= 1 + scale;
+                    vertex.y -= _ScaleParams.z * scale;
+                }
+                
+
+                
             }
 
             // 输入结构>>>顶点Shader>>>输出结构
@@ -99,7 +83,7 @@ Shader "AP01/L19/AnimGhost"
                 VertexOutput o = (VertexOutput)0;
                 AnimGhost(v.vertex.xyz, v.color.rgb);
                 o.pos = UnityObjectToClipPos(v.vertex); // 顶点位置 OS>CS
-                o.uv = TRANSFORM_TEX(v.uv, _MainTex); // UV信息 支持TilingOffset
+                o.uv = TRANSFORM_TEX(v.uv, _MainTex); // UV信息
                 o.color = v.color;
                 return o;
             }
@@ -108,7 +92,7 @@ Shader "AP01/L19/AnimGhost"
             half4 frag(VertexOutput i) : COLOR
             {
                 half4 var_MainTex = tex2D(_MainTex, i.uv); // 采样贴图 RGB颜色 A透贴
-                half3 finalRGB = var_MainTex.rgb * i.color.rgb;
+                half3 finalRGB = var_MainTex.rgb;
                 half opacity = var_MainTex.a * _Opacity;
                 return half4(finalRGB * opacity, opacity); // 返回值
             }
