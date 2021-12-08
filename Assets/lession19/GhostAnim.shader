@@ -65,17 +65,37 @@ Shader "Custom/GhostAnim"
             // 顶点动画方法
             void AnimGhost(inout float3 vertex, inout float3 color) //顶点 顶点色
             {
-                //光圈缩放
-                if (color.g > 0.9)
-                {
-                    float scale = _ScaleParams.x * color.g * sin(frac(_Time.x * _ScaleParams.y) * TWO_PI);
-                    vertex.xyz *= 1 + scale;
-                    vertex.y -= _ScaleParams.z * scale;
-                }
-                
+                //光环缩放
+                float scale = _ScaleParams.x * color.g * sin(frac(_Time.x * _ScaleParams.y) * TWO_PI);
+                vertex.xyz *= 1 + scale;
+                vertex.y -= _ScaleParams.z * scale;
 
-                
+                //幽灵摆动
+                float swingX = _SwingXParams.x * sin(
+                    frac(_Time.x * _SwingXParams.y) * TWO_PI);
+                vertex.x += swingX * color.r;
+
+                //幽灵摇头
+                float radY = radians(_ShakeYParams.x) * (1.0 - color.r) * sin(
+                    frac(_Time.z * _ShakeYParams.y - color.g * _ShakeYParams.z) * TWO_PI);
+                float sinY, cosY = 0;
+                sincos(radY, sinY, cosY);
+                vertex.xz = float2(
+                    vertex.x * cosY - vertex.z * sinY,
+                    vertex.x * sinY + vertex.z * cosY
+                );
+
+                // 幽灵起伏
+                float swingY = _SwingYParams.x * sin(
+                    frac(_Time.z * _SwingYParams.y - color.g * _SwingYParams.z) * TWO_PI);
+                vertex.y += swingY;
+
+                //处理顶点色
+                float lightness = 1.0 + color.g * scale;
+                color = float3(lightness, lightness, lightness);
             }
+
+         
 
             // 输入结构>>>顶点Shader>>>输出结构
             VertexOutput vert(VertexInput v)
@@ -91,10 +111,11 @@ Shader "Custom/GhostAnim"
             // 输出结构>>>像素
             half4 frag(VertexOutput i) : COLOR
             {
+                //return i.color;
                 half4 var_MainTex = tex2D(_MainTex, i.uv); // 采样贴图 RGB颜色 A透贴
                 half3 finalRGB = var_MainTex.rgb;
                 half opacity = var_MainTex.a * _Opacity;
-                return half4(finalRGB * opacity, opacity); // 返回值
+                return half4(finalRGB * opacity * i.color, opacity); // 返回值
             }
             ENDCG
         }
