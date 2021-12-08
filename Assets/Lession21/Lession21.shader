@@ -74,35 +74,68 @@ Shader "Unlit/Lession21"
             uniform float _CubemapMip; //cubemap的mipmap等级
 
             uniform float _EmitInt; //自发光强度
-
+            // Effect
+            uniform sampler2D _EffMap01;
+            uniform sampler2D _EffMap02;
+            uniform float3 _EffCol;
+            uniform float4 _EffParams;
 
             // 输入结构
             struct VertexInput
             {
                 float4 vertex : POSITION; // 将模型的顶点信息输入进来 默认就会输入进来
-                float2 uv:TEXCOORD0;
+                float2 uv0:TEXCOORD0;
+                float2 uv1:TEXCOORD1;
                 float3 normal:NORMAL; //物体空间的法线信息
                 float4 tangent:TANGENT;
+                float4 color:COLOR;
             };
 
             // 输出结构
             struct VertexOutput
             {
                 float4 pos : SV_POSITION; // 屏幕顶点位置
-                float2 uv:TEXCOORD0;
-                float4 posWS:TEXCOORD1;
-                float3 nDirWS:TEXCOORD2; //世界空间的法线信息
-                float3 tDirWS:TEXCOORD3;
-                float3 bDirWS:TEXCOORD4;
-                LIGHTING_COORDS(5, 6)
+                float2 uv0:TEXCOORD0;
+                float2 uv1:TEXCOORD1;
+                float4 posWS:TEXCOORD2;
+                float3 nDirWS:TEXCOORD3; //世界空间的法线信息
+                float3 tDirWS:TEXCOORD4;
+                float3 bDirWS:TEXCOORD5;
+                float4 effectMask : TEXCOORD6; // 追加effectMask输出
+                LIGHTING_COORDS(7, 8)
             };
+
+            float4 CyberpunkAnim(float noise, float mask, float3 normal, inout float3 vertex)
+            {
+                //1 得到波形基础
+                float baseMask = abs(frac(vertex.y * _EffParams.x - _Time.x * _EffParams.y) - 0.5) * 2.0;
+                //2 对波形进行调整 黑色的时间比白色的少
+                baseMask = min(1.0, baseMask * 2.0);
+                //3 做锯齿波
+                baseMask += (noise - 0.5) * _EffParams.z;
+
+                // SmoothStep : 充映射波形  smoothstep(0.2, 0.9, baseMask); 意思是将我的basemask映射到（0.2，0.9）的波形
+                float4 effectMask = float4(1.0, 1.0, 1.0, 1.0);
+                effectMask.x = smoothstep(0.0, 0.9, baseMask); //缓
+                effectMask.y = smoothstep(0.2, 0.7, baseMask); //陡
+                effectMask.z = smoothstep(0.4, 0.5, baseMask); //急
+                effectMask.w = mask; //将底座的mask存进去
+
+                //计算顶点动画 希望的是白色地方往外膨胀 黑色部分不往外膨
+                vertex.xz += normal.xz * (1.0 - effectMask.y) * _EffParams.w * mask;
+                return float4(effectMask);
+            }
 
             // 输入结构>>>顶点Shader>>>输出结构
             VertexOutput vert(VertexInput v)
             {
+                //首先对noise进行采样
+                float noise = tex2Dlod(_EffMap02, float4(v.uv1, 0.0, 0.0)).r;
                 VertexOutput o;
+                o.effectMask = CyberpunkAnim(noise, v.color.r, v.normal.xyz, v.vertex.xyz);
                 o.pos = UnityObjectToClipPos(v.vertex);
-                o.uv = v.uv;
+                o.uv0 = v.uv0;
+                o.uv1 = v.uv1;
                 o.posWS = mul(unity_ObjectToWorld, v.vertex);
                 o.nDirWS = UnityObjectToWorldNormal(v.normal);
                 o.tDirWS = normalize(mul(unity_ObjectToWorld, float4(v.tangent.xyz, 0.0)).xyz); // 切线方向 OS>WS
@@ -118,7 +151,7 @@ Shader "Unlit/Lession21"
                 float3 lDirWS = _WorldSpaceLightPos0.xyz;
 
                 //为了准备法线 先构造tbn矩阵
-                float3 nDirTS = UnpackNormal(tex2D(_NormTex, o.uv)).rgb;
+                float3 nDirTS = UnpackNormal(tex2D(_NormTex, o.uv0)).rgb;
                 float3x3 TBN = float3x3(o.tDirWS, o.bDirWS, o.nDirWS);
                 float3 nDirWS = normalize(mul(nDirTS, TBN));
 
@@ -139,9 +172,9 @@ Shader "Unlit/Lession21"
 
                 //3采样纹理
 
-                float4 var_MainTex = tex2D(_MainTex, o.uv);
-                float4 var_SpecTex = tex2D(_SpecTex, o.uv);
-                float3 var_EmissTex = tex2D(_EmitTex, o.uv).rgb;
+                float4 var_MainTex = tex2D(_MainTex, o.uv0);
+                float4 var_SpecTex = tex2D(_SpecTex, o.uv0);
+                float3 var_EmissTex = tex2D(_EmitTex, o.uv0).rgb;
                 float lerpValue = lerp(_CubemapMip, 0.0, var_SpecTex.a); //我们把mipmap存储到了高光贴图的a通道中
                 float3 var_CubeMap = texCUBElod(_Cubemap, float4(vrDirWS, lerpValue)).rgb;
 
@@ -176,9 +209,36 @@ Shader "Unlit/Lession21"
                 float emitIntensity = _EmitInt * (sin(frac(_Time.z)) * 0.5 + 0.5);
                 float3 emission = var_EmissTex * emitIntensity;
 
-                //5 最终结果
+
+                // 特效部分
+                // 采样EffMap02
+                float3 _EffMap01_var = tex2D(_EffMap01, o.uv1).xyz;
+                float meshMask = _EffMap01_var.x;
+                float faceRandomMask = _EffMap01_var.y;
+                float faceSlopeMask = _EffMap01_var.z;
+                // 获取EffectMask
+                float smallMask = o.effectMask.x;
+                float midMask = o.effectMask.y;
+                float bigMask = o.effectMask.z;
+                float baseMask = o.effectMask.w;
+                // 计算Opacity
+                //大于1纯透明 小与1纯不透 参数是周期性加随机性
+                float midOpacity = saturate(floor(min(faceRandomMask, 0.999999) + midMask));
+                //用蓝通道的面坡性
+                float bigOpacity = saturate(floor(min(faceSlopeMask, 0.999999) + bigMask));
+                //混合起来 比单独一种效果好
+                float opacity = lerp(1.0, min(bigOpacity, midOpacity), baseMask);
+
+
+                // 叠加自发光
+                //半消散 没消散的中间区域 因为只想发光网格 所以乘以网格
+                float meshEmitInt = (bigMask - smallMask) * meshMask;
+                //为了让他密集一点 power一次
+                meshEmitInt = meshEmitInt * meshEmitInt; //相当于power
+                emission += _EffCol * meshEmitInt * baseMask; //乘以基座不发光的mask
+
                 float3 finalRGB = dirLighting + envLighting + emission;
-                return float4(finalRGB, 1.0);
+                return float4(finalRGB * opacity, opacity);
             }
             ENDCG
         }
